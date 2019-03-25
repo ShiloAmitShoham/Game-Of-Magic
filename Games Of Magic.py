@@ -85,7 +85,7 @@ def mouse():
     for event in pygame.event.get():
         if event.type == pygame.MOUSEBUTTONDOWN:
             return pygame.mouse.get_pos()
-    return (False, False)
+    return False, False
 
 
 def quit():

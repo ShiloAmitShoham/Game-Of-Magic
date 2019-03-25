@@ -29,10 +29,10 @@ class Character(object):
         self.walk_img = walk_img
         self.attack_img = attack_img
         self.side = side
-        self.dic_side_boolean = {'left':True, 'right':False}
+        self.dic_side_boolean = {'left': True, 'right': False}
         self.screen = screen
         self.center_x, self.center_y = get_center_point(self.x, self.y, self.width, self.height)
-        self.attack = False
+        self.attacked = False
 
     def show_walk(self):
         string_index, self.index_walking = get_index_string(self.index_walking, self.limit_walking)

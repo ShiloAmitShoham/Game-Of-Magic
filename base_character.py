@@ -6,7 +6,8 @@ import math
 
 class Character(object):
 
-    def __init__(self, type_charachter, x, y, width, height, width_attack, height_attack, start_health, power, cost, step, walk_img, attack_img,
+    def __init__(self, type_charachter, x, y, width, height, width_attack, height_attack, start_health, power, cost,
+                 step, walk_img, attack_img,
                  side, limit_walking, limit_attacking, screen):
         self.type = type_charachter
         self.x = x
@@ -18,7 +19,7 @@ class Character(object):
         self.start_health = start_health
         self.health = start_health
         self.hitbox_health = float(100) / float(start_health)
-        self.hitbox = (self.x + 50, self.y + 11, 29, 52)
+        self.hitbox = (self.x + self.width/3, self.y + 11, 29, 52)
         self.power = power
         self.cost = cost
         self.step = step
@@ -44,19 +45,22 @@ class Character(object):
         pygame.draw.rect(self.screen, (255, 0, 0), (self.hitbox[0], self.hitbox[1] - 20, 50, 10))
         pygame.draw.rect(self.screen, (0, 128, 0), (
             self.hitbox[0], self.hitbox[1] - 20, 50 - (5 * (10 - (self.hitbox_health * self.health) / 10)), 10))
-        self.hitbox = (self.x + 17, self.y + 2, 31, 57)
+        self.hitbox = (self.x + self.width/3, self.y + 2, 31, 57)
 
     def show_attack(self):
         string_index, self.index_attacking = get_index_string(self.index_attacking, self.limit_attacking)
         img_name = pygame.image.load(self.attack_img + string_index + '.png')
         img = pygame.transform.scale(img_name, (self.width_attack, self.height_attack))
-        self.screen.blit(pygame.transform.flip(img, self.dic_side_boolean[self.side], False), (self.x, self.y))
+        if self.type == 'Minotaur':
+            self.screen.blit(pygame.transform.flip(img, self.dic_side_boolean[self.side], False), (self.x, self.y - self.height_attack/2))
+        else:
+            self.screen.blit(pygame.transform.flip(img, self.dic_side_boolean[self.side], False), (self.x, self.y))
         pygame.display.flip()
         pygame.time.delay(5)
         pygame.draw.rect(self.screen, (255, 0, 0), (self.hitbox[0], self.hitbox[1] - 20, 50, 10))
         pygame.draw.rect(self.screen, (0, 128, 0), (
             self.hitbox[0], self.hitbox[1] - 20, 50 - (5 * (10 - (self.health * self.hitbox_health) / 10)), 10))
-        self.hitbox = (self.x + 17, self.y + 2, 31, 57)
+        self.hitbox = (self.x + self.width/3, self.y + 2, 31, 57)
 
     def move_to(self, obj):
         # starting point
@@ -77,12 +81,15 @@ class Character(object):
         obj.health -= self.power
         if obj.health < 0:
             obj.health = 0
-            
+
     def distance(self, obj):
         sq1 = (self.center_x - obj.center_x) * (self.center_x - obj.center_x)
         sq2 = (self.center_y - obj.center_y) * (self.center_y - obj.center_y)
         return math.sqrt(sq1 + sq2)
-    
+        
+    def __str__(self):
+        return 'Type: ', str(self.type), ', x: ', str(self.x), ', y: ', str(self.y)
+
 def get_center_point(x, y, width, height):
     x1 = x
     y1 = y
@@ -120,7 +127,8 @@ def angel_between_two_point(xi, yi, xii, yii):
     deltax = x2 - x1
     deltay = y2 - y1
     return atan2(deltay, deltax)
-    
+
+
 def distance_for_math(xi, yi, xii, yii):
     sq1 = (xi - xii) * (xi - xii)
     sq2 = (yi - yii) * (yi - yii)

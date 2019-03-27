@@ -5,7 +5,7 @@ import math
 import os
 from Charachters import Medusa, Minotaur, Wizard, Skeleton
 from Castle import Castle
-
+from client_game import *
 
 def opening_screen():
     pic = 'screens/opening.png'
@@ -85,7 +85,7 @@ def mouse():
     for event in pygame.event.get():
         if event.type == pygame.MOUSEBUTTONDOWN:
             return pygame.mouse.get_pos()
-    return False, False
+    return (False, False)
 
 
 def quit():
@@ -97,7 +97,6 @@ def quit():
 
 
 def music():
-    print pygame.mixer.music.get_busy()
     if pygame.mixer.music.get_busy() == 1:
         pygame.mixer.music.stop()
     else:
@@ -108,12 +107,21 @@ def play_intro():
     pygame.mixer.music.load('opening_music.mp3')
     pygame.mixer.music.play(-1, 2)
 
+def music_battle():
+    pygame.mixer.music.load('music1.mp3')
+    pygame.mixer.music.play(-1, 2)
+
 
 def main():
+    client_socket = socket.socket()
+    client_socket.connect(('127.0.0.1', 8080))	
+    client_socket.setblocking(0)
     build_screen(1440, 759)
     play_intro()
     opening_screen()
     print 'play'
+    music_battle()
+    sys.argv = [client_socket, 'left']
     execfile("client_game.py")
 
 

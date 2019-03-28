@@ -14,16 +14,17 @@ dict_has_other_player = {}
 def send_waiting_messages(wlist):
 	for message in messages_to_send:
 		(client_socket, data) = message
-		for socket_to_send in wlist:
-			socket_to_send.send(data)
-			if dict_has_other_player[client_socket] in wlist:
-				dict_has_other_player[client_socket].send(data)
+		if client_socket in wlist:
+			client_socket.send(data)
+		if dict_has_other_player[client_socket] in wlist:
+			dict_has_other_player[client_socket].send(data)
 		messages_to_send.remove(message)
 	for tuple_to_send in send_start_game:
-		if tuple_to_send[0] in wlist:
-			tuple_to_send[0].send('right')
-		if tuple_to_send[1] in wlist:
-			tuple_to_send[1].send('left')
+		socket1, socket2 = tuple_to_send
+		if socket1 in wlist:
+			socket1.send('right')
+		if socket2 in wlist:
+			socket2.send('left')
 		send_start_game.remove(tuple_to_send)
 
 while True:

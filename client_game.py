@@ -160,9 +160,12 @@ def handel_charachter_to_append(mouse_x, mouse_y, characters_names, character_to
         return character_to_append, mana
 
 def return_character_by_string(data, screen, my_side, my_creachers, enemy_creachers):
+    print data
     list_data = data.split(':')
     character_side = {'left': 'right', 'right': 'left'}
-    if data[3] == my_side:
+    print 'my_side = ' + my_side + ', Character side ' + character_side[list_data[3]]
+    if list_data[3] == my_side:
+        print list_data[3]
         if list_data[0] == 'Medusa':
             my_creachers.append(Medusa(int(list_data[1]), int(list_data[2]), character_side[list_data[3]], screen))
         elif list_data[0] == 'Wizard':
@@ -172,6 +175,7 @@ def return_character_by_string(data, screen, my_side, my_creachers, enemy_creach
         elif list_data[0] == 'Skeleton':
             my_creachers.append(Skeleton(int(list_data[1]), int(list_data[2]), character_side[list_data[3]], screen))
     else:
+        print list_data[3]
         if list_data[0] == 'Medusa':
             enemy_creachers.append(Medusa(int(list_data[1]), int(list_data[2]), character_side[list_data[3]], screen))
         elif list_data[0] == 'Wizard':
@@ -180,6 +184,7 @@ def return_character_by_string(data, screen, my_side, my_creachers, enemy_creach
             enemy_creachers.append(Minotaur(int(list_data[1]), int(list_data[2]), character_side[list_data[3]], screen))
         elif list_data[0] == 'Skeleton':
             enemy_creachers.append(Skeleton(int(list_data[1]), int(list_data[2]), character_side[list_data[3]], screen))
+    return my_creachers, enemy_creachers
 
 def update_mana(mana, turn):
     if turn % 15 == 0 and mana < 10:
@@ -218,8 +223,8 @@ def main():
     run = True
     my_creachers = []
     reverse_side = {'left': 'right', 'right': 'left'}
-    enemy_creachers = [Wizard(1000, 30, my_side, screen)]
-    if my_side is 'left':
+    enemy_creachers = []
+    if my_side == 'left':
         my_castle = Castle(-150, 580, 'left', screen, 21)
         enemy_castle =  Castle(1300, 50, 'right', screen, 24)
     else:
@@ -229,6 +234,8 @@ def main():
     characters_names = characters_names_list()
     character_to_append = ''
     mana = 0
+    print 'my_castle =' + my_castle.side
+    print 'enemy_castle =' + enemy_castle.side
     while run:
         turn += 1
         ready = select.select([client_socket], [], [], 0.000000000000000000000000000000000000000000000000000000000000000001)

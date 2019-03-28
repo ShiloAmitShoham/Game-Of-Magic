@@ -114,14 +114,23 @@ def music_battle():
 
 def main():
     client_socket = socket.socket()
-    client_socket.connect(('127.0.0.1', 8080))	
-    client_socket.setblocking(0)
+    client_socket.connect(('127.0.0.1', 8080))
+    client_socket.setblocking(True)
+    open_client_sockets = [client_socket]
     build_screen(1440, 759)
     play_intro()
     opening_screen()
     print 'play'
+    client_socket.send('want-play')
+    run = True
+    while run:
+        rlist, wlist, xlist = select.select([client_socket] + open_client_sockets, open_client_sockets, [])
+        if rlist:
+            my_side = client_socket.recv(1024)
+            run = False
+    print my_side
     music_battle()
-    sys.argv = [client_socket, 'left']
+    sys.argv = [client_socket, my_side]
     execfile("client_game.py")
 
 

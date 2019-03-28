@@ -129,13 +129,20 @@ def in_toolbar(x, y):
 def handel_charachter_to_append(mouse_x, mouse_y, characters_names, character_to_append, client_socket, mana, my_side):
     dict_names_cost = {'Medusa': 6, 'Wizard': 4, 'Minotaur': 5, 'Skeleton': 4}
     if mouse_x:
+        flag = False
+        if my_side == 'right':
+            if mouse_x >= 720:
+                flag = True
+        elif my_side == 'left':
+            if mouse_x <= 720:
+                flag = True
         if character_to_append is not '':
             if in_toolbar(mouse_x, mouse_y):
                 if in_toolbar(mouse_x, mouse_y) is 'Right':
                     return characters_names[0], mana
                 else:
                     return characters_names[1], mana
-            elif mana >= dict_names_cost[character_to_append]:
+            elif flag and mana >= dict_names_cost[character_to_append]:
                 client_socket.send(character_to_append + ':' + str(mouse_x) + ':' + str(mouse_y) + ':' + my_side)
                 characters_names.remove(character_to_append)
                 characters_names.append(character_to_append)
@@ -152,17 +159,27 @@ def handel_charachter_to_append(mouse_x, mouse_y, characters_names, character_to
     else:
         return character_to_append, mana
 
-def return_character_by_string(data, screen, my_side):
+def return_character_by_string(data, screen, my_side, my_creachers, enemy_creachers):
     list_data = data.split(':')
     character_side = {'left': 'right', 'right': 'left'}
-    if list_data[0] == 'Medusa':
-        return Medusa(int(list_data[1]), int(list_data[2]), character_side[list_data[3]], screen)
-    elif list_data[0] == 'Wizard':
-        return Wizard(int(list_data[1]), int(list_data[2]), character_side[list_data[3]], screen)
-    elif list_data[0] == 'Minotaur':
-        return Minotaur(int(list_data[1]), int(list_data[2]), character_side[list_data[3]], screen)
-    elif list_data[0] == 'Skeleton':
-        return Skeleton(int(list_data[1]), int(list_data[2]), character_side[list_data[3]], screen)
+    if data[3] == my_side:
+        if list_data[0] == 'Medusa':
+            my_creachers.append(Medusa(int(list_data[1]), int(list_data[2]), character_side[list_data[3]], screen))
+        elif list_data[0] == 'Wizard':
+            my_creachers.append(Wizard(int(list_data[1]), int(list_data[2]), character_side[list_data[3]], screen))
+        elif list_data[0] == 'Minotaur':
+            my_creachers.append(Minotaur(int(list_data[1]), int(list_data[2]), character_side[list_data[3]], screen))
+        elif list_data[0] == 'Skeleton':
+            my_creachers.append(Skeleton(int(list_data[1]), int(list_data[2]), character_side[list_data[3]], screen))
+    else:
+        if list_data[0] == 'Medusa':
+            enemy_creachers.append(Medusa(int(list_data[1]), int(list_data[2]), character_side[list_data[3]], screen))
+        elif list_data[0] == 'Wizard':
+            enemy_creachers.append(Wizard(int(list_data[1]), int(list_data[2]), character_side[list_data[3]], screen))
+        elif list_data[0] == 'Minotaur':
+            enemy_creachers.append(Minotaur(int(list_data[1]), int(list_data[2]), character_side[list_data[3]], screen))
+        elif list_data[0] == 'Skeleton':
+            enemy_creachers.append(Skeleton(int(list_data[1]), int(list_data[2]), character_side[list_data[3]], screen))
 
 def update_mana(mana, turn):
     if turn % 15 == 0 and mana < 10:
@@ -217,7 +234,7 @@ def main():
         ready = select.select([client_socket], [], [], 0.000000000000000000000000000000000000000000000000000000000000000001)
         if ready[0]:
             data = client_socket.recv(1024)
-            my_creachers.append(return_character_by_string(data, screen, my_side))
+            my_creachers, enemy_creachers = return_character_by_string(data, screen, my_side,my_creachers, enemy_creachers)
         mana = update_mana(mana, turn)
         build_areana(screen)
         show_mana(mana, screen)
